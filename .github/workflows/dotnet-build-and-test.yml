@@ -2,9 +2,16 @@ name: '.NET - Build and test'
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - 'release/**'
+    paths:
+      - 'dotnet/**'
   workflow_call:
     secrets:
       NUGET_API_KEY:
+        required: true
+      GITHUB_TOKEN:
         required: false
 
 defaults:
@@ -72,7 +79,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     needs: build
-    if: github.event_name == 'push' && github.ref == 'refs/heads/release'
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release/')
 
     steps:
       - name: Set up .NET
@@ -93,4 +100,4 @@ jobs:
         run: dotnet nuget add source --username cmdotcom --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/cmdotcom/index.json"
 
       - name: Publish to Github Packages
-        run: dotnet nuget push **/*.nupkg -s github
+        run: dotnet nuget push nupkg/*.nupkg -s github --skip-duplicate
