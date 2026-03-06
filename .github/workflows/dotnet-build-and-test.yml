@@ -11,8 +11,6 @@ on:
     secrets:
       NUGET_API_KEY:
         required: true
-      GITHUB_TOKEN:
-        required: false
 
 defaults:
   run:
