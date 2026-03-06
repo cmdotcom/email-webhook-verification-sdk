@@ -1,0 +1,31 @@
+# Rust build artifacts
+/target/
+debug/
+release/
+
+# Cargo lock for libraries (optional - remove if you want to commit it)
+# Cargo.lock
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Coverage
+*.profraw
+*.profdata
+coverage/
+lcov.info
+tarpaulin-report.html
+
+# Documentation
+/doc/
+
+# Backup files
+*.bak
+*.orig

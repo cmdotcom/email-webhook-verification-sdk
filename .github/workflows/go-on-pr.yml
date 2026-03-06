@@ -1,0 +1,12 @@
+name: 'Go - On pull request'
+
+on:
+  pull_request:
+    types: [ opened, reopened, synchronize ]
+    paths:
+      - 'go/**'
+      - '.github/workflows/go-*.yml'
+
+jobs:
+  build-and-test:
+    uses: ./.github/workflows/go-build-and-test.yml

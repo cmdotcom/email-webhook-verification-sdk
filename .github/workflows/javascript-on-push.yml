@@ -1,0 +1,17 @@
+name: 'JavaScript - On push'
+
+on:
+  push:
+    branches:
+      - main
+      - release
+    paths:
+      - 'javascript/**'
+      - '.github/workflows/javascript-*.yml'
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    uses: ./.github/workflows/javascript-build-and-test.yml
+    secrets:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

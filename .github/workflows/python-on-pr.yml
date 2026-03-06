@@ -1,0 +1,12 @@
+name: 'Python - On pull request'
+
+on:
+  pull_request:
+    types: [ opened, reopened, synchronize ]
+    paths:
+      - 'python/**'
+      - '.github/workflows/python-*.yml'
+
+jobs:
+  build-and-test:
+    uses: ./.github/workflows/python-build-and-test.yml

@@ -1,0 +1,17 @@
+name: 'Python - On push'
+
+on:
+  push:
+    branches:
+      - main
+      - release
+    paths:
+      - 'python/**'
+      - '.github/workflows/python-*.yml'
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    uses: ./.github/workflows/python-build-and-test.yml
+    secrets:
+      PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}

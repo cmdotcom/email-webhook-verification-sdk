@@ -1,0 +1,15 @@
+name: 'Go - On push'
+
+on:
+  push:
+    branches:
+      - main
+      - release
+    paths:
+      - 'go/**'
+      - '.github/workflows/go-*.yml'
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    uses: ./.github/workflows/go-build-and-test.yml

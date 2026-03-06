@@ -1,0 +1,12 @@
+name: 'JavaScript - On pull request'
+
+on:
+  pull_request:
+    types: [ opened, reopened, synchronize ]
+    paths:
+      - 'javascript/**'
+      - '.github/workflows/javascript-*.yml'
+
+jobs:
+  build-and-test:
+    uses: ./.github/workflows/javascript-build-and-test.yml

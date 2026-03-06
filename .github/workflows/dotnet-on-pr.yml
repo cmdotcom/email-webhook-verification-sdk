@@ -1,0 +1,12 @@
+name: '.NET - On pull request'
+
+on:
+  pull_request:
+    types: [ opened, reopened, synchronize ]
+    paths:
+      - 'dotnet/**'
+      - '.github/workflows/dotnet-*.yml'
+
+jobs:
+  build-and-test:
+    uses: ./.github/workflows/dotnet-build-and-test.yml

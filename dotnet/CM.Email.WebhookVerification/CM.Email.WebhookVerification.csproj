@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<Version>1.0.0</Version>
+
+		<!-- NuGet Package Metadata -->
+		<PackageId>CM.Email.WebhookVerification</PackageId>
+		<Title>CM Email Webhook Verification</Title>
+		<Description>SDK for verifying CM Email webhook signatures</Description>
+		<Authors>CM.com</Authors>
+		<Company>CM.com</Company>
+		<PackageTags>cm;email;webhook;verification;signature</PackageTags>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageProjectUrl>https://github.com/cmdotcom/email-webhook-verification-sdks</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/cmdotcom/email-webhook-verification-sdks</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="..\README.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
+	<ItemGroup>
+	<PackageReference Include="CSharpGuidelinesAnalyzer" Version="3.8.5">
+		<PrivateAssets>all</PrivateAssets>
+		<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	</PackageReference>
+	<PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="9.0.0">
+		<PrivateAssets>all</PrivateAssets>
+		<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	</PackageReference>
+  </ItemGroup>
+</Project>

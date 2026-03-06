@@ -1,0 +1,23 @@
+[package]
+name = "cm-email-webhook-verification"
+version = "1.0.0"
+edition = "2021"
+authors = ["email-gateway"]
+description = "SDK for verifying CM Email webhook signatures"
+license = "MIT"
+repository = "https://github.com/cmdotcom/email-webhook-verification-sdks"
+documentation = "https://github.com/cmdotcom/email-webhook-verification-sdks#readme"
+keywords = ["webhook", "verification", "hmac", "signature", "email"]
+categories = ["authentication", "cryptography"]
+rust-version = "1.71.0"
+
+[dependencies]
+hmac = "0.12"
+sha2 = "0.10"
+base64 = "0.22"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "1.0"
+
+[dev-dependencies]
+tokio = { version = "1.0", features = ["macros", "rt-multi-thread"] }

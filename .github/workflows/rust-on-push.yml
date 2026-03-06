@@ -1,0 +1,17 @@
+name: 'Rust - On push'
+
+on:
+  push:
+    branches:
+      - main
+      - release
+    paths:
+      - 'rust/**'
+      - '.github/workflows/rust-*.yml'
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    uses: ./.github/workflows/rust-build-and-test.yml
+    secrets:
+      CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
