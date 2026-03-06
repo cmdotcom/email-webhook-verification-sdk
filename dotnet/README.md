@@ -109,3 +109,4 @@ All exceptions inherit from `WebhookVerificationException`.
 ## License
 
 MIT License - see [LICENSE](../LICENSE) for details.
+
