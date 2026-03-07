@@ -3,10 +3,35 @@ name: 'Rust - On pull request'
 on:
   pull_request:
     types: [ opened, reopened, synchronize ]
-    paths:
-      - 'rust/**'
-      - '.github/workflows/rust-*.yml'
 
 jobs:
+  check-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.check.outputs.should_run }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check if should run
+        id: check
+        run: |
+          # Always run for PRs targeting release branches
+          if [[ "${{ github.base_ref }}" == release/* ]]; then
+            echo "should_run=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Check if relevant files changed
+          CHANGED=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -E '^(rust/|\.github/workflows/rust-)' || true)
+          if [ -n "$CHANGED" ]; then
+            echo "should_run=true" >> $GITHUB_OUTPUT
+          else
+            echo "should_run=false" >> $GITHUB_OUTPUT
+          fi
+
   build-and-test:
+    needs: check-changes
+    if: needs.check-changes.outputs.should_run == 'true'
     uses: ./.github/workflows/rust-build-and-test.yml
