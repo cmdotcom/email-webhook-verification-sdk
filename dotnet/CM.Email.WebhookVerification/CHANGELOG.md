@@ -2,7 +2,7 @@
 
 All notable changes to CM.Email.WebhookVerification will be documented in this file.
 
-[1.0.0] - 2026-03-05
+[1.0.0] - 2026-03-07
 
 ### Added
 
