@@ -1,12 +1,18 @@
 # Changelog
 
-All notable changes to @cm.com/email-webhook-verification will be documented in this file.
+All notable changes to @cm-email-gateway/email-webhook-verification will be documented in this file.
+
+## [1.0.1] - 2026-03-09
+
+### Fixed
+
+- Corrected package name in README documentation
 
 ## [1.0.0] - 2026-03-08
 
 ### Added
 
-- Initial release of @cm.com/email-webhook-verification SDK
+- Initial release of @cm-email-gateway/email-webhook-verification SDK
 - `WebhookValidator` class for verifying webhook authenticity
 - HMAC-SHA512 signature verification matching the CM Email webhook signing service
 - Timestamp validation with configurable tolerance window (default: 5 minutes)
