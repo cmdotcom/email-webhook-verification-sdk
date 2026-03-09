@@ -5,7 +5,7 @@ Go SDK for verifying CM Email webhook signatures.
 ## Installation
 
 ```bash
-go get github.com/cmdotcom/email-webhook-verification-sdks/go
+go get github.com/cmdotcom/email-webhook-verification-sdk/go
 ```
 
 ## Requirements
@@ -21,7 +21,7 @@ import (
     "fmt"
     "log"
 
-    webhook "github.com/cmdotcom/email-webhook-verification-sdks/go"
+    webhook "github.com/cmdotcom/email-webhook-verification-sdk/go"
 )
 
 func main() {
@@ -71,7 +71,7 @@ import (
     "io"
     "net/http"
 
-    webhook "github.com/cmdotcom/email-webhook-verification-sdks/go"
+    webhook "github.com/cmdotcom/email-webhook-verification-sdk/go"
 )
 
 var validator = webhook.NewWebhookValidator("your-secret-key")

@@ -2,6 +2,12 @@
 
 All notable changes to cm-email-webhook-verification will be documented in this file.
 
+## [1.0.1] - 2026-03-09
+
+### Fixed
+
+- Corrected package import path in README documentation
+
 ## [1.0.0] - 2026-03-09
 
 ### Added
