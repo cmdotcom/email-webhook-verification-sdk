@@ -16,3 +16,4 @@ All notable changes to cm-email-webhook-verification will be documented in this 
 
 - Timestamp tolerance validation to prevent replay attacks
 - Constant-time signature comparison to prevent timing attacks
+
