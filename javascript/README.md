@@ -1,17 +1,17 @@
-# @cm/email-webhook-verification
+# @cm-email-gateway/email-webhook-verification
 
 Node.js/TypeScript SDK for verifying CM Email webhook signatures.
 
 ## Installation
 
 ```bash
-npm install @cm/email-webhook-verification
+npm install @cm-email-gateway/email-webhook-verification
 ```
 
 Or with yarn:
 
 ```bash
-yarn add @cm/email-webhook-verification
+yarn add @cm-email-gateway/email-webhook-verification
 ```
 
 ## Requirements
@@ -21,7 +21,7 @@ yarn add @cm/email-webhook-verification
 ## Usage
 
 ```typescript
-import { WebhookValidator } from '@cm/email-webhook-verification';
+import { WebhookValidator } from '@cm-email-gateway/email-webhook-verification';
 
 // Initialize the validator with your secret key
 const validator = new WebhookValidator({
@@ -65,7 +65,7 @@ try {
 
 ```typescript
 import express from 'express';
-import { WebhookValidator, WebhookVerificationError } from '@cm/email-webhook-verification';
+import { WebhookValidator, WebhookVerificationError } from '@cm-email-gateway/email-webhook-verification';
 
 const app = express();
 app.use(express.raw({ type: 'application/json' }));

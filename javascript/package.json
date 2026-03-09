@@ -1,6 +1,6 @@
 {
   "name": "@cm-email-gateway/email-webhook-verification",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "SDK for verifying CM Email webhook signatures",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
