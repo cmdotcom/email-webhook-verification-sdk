@@ -2,7 +2,7 @@
 
 All notable changes to cm-email-webhook-verification will be documented in this file.
 
-## [1.0.0] - [LB] - 2026-03-02
+## [1.0.0] - 2026-03-08
 
 ### Added
 
