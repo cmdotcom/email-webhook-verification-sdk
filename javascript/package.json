@@ -1,5 +1,5 @@
 {
-  "name": "@cm/email-webhook-verification",
+  "name": "@cm-email-gateway/email-webhook-verification",
   "version": "1.0.0",
   "description": "SDK for verifying CM Email webhook signatures",
   "main": "dist/cjs/index.js",
@@ -35,6 +35,9 @@
   ],
   "author": "email-team",
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/cmdotcom/email-webhook-verification-sdks"
