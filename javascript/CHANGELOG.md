@@ -2,6 +2,9 @@
 
 All notable changes to @cm-email-gateway/email-webhook-verification will be documented in this file.
 
+## [1.0.2] - 2026-04-01
+- vulnerabilities fix
+
 ## [1.0.1] - 2026-03-09
 
 ### Fixed
