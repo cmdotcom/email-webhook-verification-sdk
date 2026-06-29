@@ -88,8 +88,15 @@ public class WebhookValidator
 
     private static bool ConstantTimeEquals(string signature, string expectedSignature)
     {
-        var aBytes = Convert.FromBase64String(signature);
-        var bBytes = Convert.FromBase64String(expectedSignature);
-        return CryptographicOperations.FixedTimeEquals(aBytes, bBytes);
+        try
+        {
+            var aBytes = Convert.FromBase64String(signature);
+            var bBytes = Convert.FromBase64String(expectedSignature);
+            return CryptographicOperations.FixedTimeEquals(aBytes, bBytes);
+        }
+        catch (FormatException)
+        {
+            throw new InvalidSignatureException();
+        }
     }
 }
