@@ -4,10 +4,13 @@ import time
 import pytest
 
 from cm_email_webhook_verification import (
+    InvalidPayloadError,
     InvalidSignatureError,
+    InvalidTimestampError,
     MissingHeaderError,
     TimestampExpiredError,
     WebhookValidator,
+    WebhookVerificationError,
 )
 from cm_email_webhook_verification.signer import generate_signature
 
@@ -100,11 +103,11 @@ class TestWebhookValidator:
     def test_verify_empty_payload(self) -> None:
         headers = {"svix-id": "123", "svix-timestamp": "123", "svix-signature": "sig"}
 
-        with pytest.raises(ValueError):
+        with pytest.raises(InvalidPayloadError):
             self.validator.verify("", headers)
 
     def test_verify_none_headers(self) -> None:
-        with pytest.raises(ValueError):
+        with pytest.raises(MissingHeaderError):
             self.validator.verify('{"event": "test"}', None)  # type: ignore
 
     def test_constructor_empty_secret(self) -> None:
@@ -143,10 +146,110 @@ class TestWebhookValidator:
             "svix-signature": "signature",
         }
 
-        with pytest.raises(ValueError) as exc_info:
+        with pytest.raises(InvalidTimestampError) as exc_info:
             self.validator.verify(payload, headers)
 
         assert "timestamp" in str(exc_info.value).lower()
+
+
+def _signed(secret_key: str, payload: str, message_id: str = "msg-123") -> dict[str, str]:
+    timestamp_ms = int(time.time() * 1000)
+    signature = generate_signature(secret_key, f"{message_id}.{timestamp_ms}.{payload}")
+    return {
+        "svix-id": message_id,
+        "svix-timestamp": str(timestamp_ms),
+        "svix-signature": signature,
+    }
+
+
+class TestUntrustedInputRaisesVerificationError:
+    """Every failure caused by untrusted request data must be a WebhookVerificationError,
+    so the documented ``except WebhookVerificationError`` handler can answer 401."""
+
+    secret_key = "test-secret-key"
+
+    def setup_method(self) -> None:
+        self.validator = WebhookValidator(self.secret_key)
+        self.payload = json.dumps({"event": "test"})
+
+    @pytest.mark.parametrize(
+        "mutate",
+        [
+            pytest.param(lambda sig: sig[:-1] + "\u00e4", id="last-char-non-ascii"),
+            pytest.param(lambda sig: "\u00e4" * len(sig), id="all-non-ascii"),
+            pytest.param(lambda sig: sig + "\U0001f600", id="emoji-appended"),
+            pytest.param(lambda sig: "\u00e4" + sig[1:], id="first-char-non-ascii"),
+            pytest.param(lambda sig: sig[:-1] + "\ud800", id="lone-surrogate"),
+        ],
+    )
+    def test_non_ascii_signature_is_invalid_signature(self, mutate) -> None:  # type: ignore[no-untyped-def]
+        headers = _signed(self.secret_key, self.payload)
+        headers["svix-signature"] = mutate(headers["svix-signature"])
+
+        with pytest.raises(InvalidSignatureError):
+            self.validator.verify(self.payload, headers)
+
+    def test_valid_signature_still_verifies(self) -> None:
+        headers = _signed(self.secret_key, self.payload)
+
+        assert self.validator.verify(self.payload, headers) == {"event": "test"}
+
+    @pytest.mark.parametrize("bad_signature", ["", "AAAA", "not base64!!", "=" * 88])
+    def test_ascii_bad_signatures_are_invalid_signature(self, bad_signature: str) -> None:
+        headers = _signed(self.secret_key, self.payload)
+        headers["svix-signature"] = bad_signature
+
+        with pytest.raises(WebhookVerificationError):
+            self.validator.verify(self.payload, headers)
+
+    @pytest.mark.parametrize("payload", ["", "   ", "\n"])
+    def test_empty_payload_is_invalid_payload(self, payload: str) -> None:
+        with pytest.raises(InvalidPayloadError):
+            self.validator.verify(payload, _signed(self.secret_key, payload))
+
+    def test_none_headers_is_missing_header(self) -> None:
+        with pytest.raises(MissingHeaderError):
+            self.validator.verify(self.payload, None)  # type: ignore[arg-type]
+
+    @pytest.mark.parametrize("timestamp", ["abc", "12.5", "0x10", "1e3", "12 34"])
+    def test_non_numeric_timestamp_is_invalid_timestamp(self, timestamp: str) -> None:
+        headers = _signed(self.secret_key, self.payload)
+        headers["svix-timestamp"] = timestamp
+
+        with pytest.raises(InvalidTimestampError):
+            self.validator.verify(self.payload, headers)
+
+    def test_correctly_signed_non_json_payload_is_invalid_payload(self) -> None:
+        payload = "this is not json"
+
+        with pytest.raises(InvalidPayloadError):
+            self.validator.verify(payload, _signed(self.secret_key, payload))
+
+    def test_documented_handler_returns_401_for_every_bad_input(self) -> None:
+        """Mirrors the README Flask handler: only WebhookVerificationError is caught."""
+
+        def handler(payload: str, headers: dict[str, str]) -> int:
+            try:
+                self.validator.verify(payload, headers)
+                return 200
+            except WebhookVerificationError:
+                return 401
+
+        good = _signed(self.secret_key, self.payload)
+        non_ascii = {**good, "svix-signature": good["svix-signature"][:-1] + "\u00e4"}
+        bad_timestamp = {**good, "svix-timestamp": "abc"}
+
+        assert handler(self.payload, good) == 200
+        assert handler(self.payload, non_ascii) == 401
+        assert handler(self.payload, bad_timestamp) == 401
+        assert handler("", good) == 401
+        assert handler(self.payload, None) == 401  # type: ignore[arg-type]
+        assert handler("not json", _signed(self.secret_key, "not json")) == 401
+
+    def test_new_errors_are_still_value_errors_for_backward_compatibility(self) -> None:
+        for exc in (InvalidPayloadError, InvalidTimestampError, MissingHeaderError):
+            assert issubclass(exc, ValueError)
+            assert issubclass(exc, WebhookVerificationError)
 
 
 class TestGenerateSignature:
