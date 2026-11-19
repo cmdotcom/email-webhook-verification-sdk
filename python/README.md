@@ -124,7 +124,9 @@ See [Best practices](https://developers.cm.com/messaging/docs/webhook-verificati
 | `WebhookVerificationError` | Base exception for all verification errors |
 | `InvalidSignatureError` | Signature does not match |
 | `TimestampExpiredError` | Timestamp outside tolerance window |
-| `MissingHeaderError` | Required headers missing |
+| `MissingHeaderError` | Required headers missing (or `headers` is `None`) |
+| `InvalidPayloadError` | Payload is empty or not valid JSON |
+| `InvalidTimestampError` | `svix-timestamp` is not a valid integer |
 
 ## Security
 

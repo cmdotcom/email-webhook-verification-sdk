@@ -4,11 +4,23 @@ import time
 from typing import Any
 
 from cm_email_webhook_verification.exceptions import (
+    InvalidPayloadError,
     InvalidSignatureError,
+    InvalidTimestampError,
     MissingHeaderError,
     TimestampExpiredError,
 )
 from cm_email_webhook_verification.signer import generate_signature
+
+
+def _constant_time_equals(received: str, expected: str) -> bool:
+    # hmac.compare_digest raises TypeError for str operands that contain non-ASCII
+    # characters, and the received signature is untrusted input. Compare as bytes so
+    # any header value is handled and simply fails to match.
+    return hmac.compare_digest(
+        received.encode("utf-8", errors="surrogatepass"),
+        expected.encode("utf-8", errors="surrogatepass"),
+    )
 
 
 class WebhookValidator:
@@ -25,10 +37,10 @@ class WebhookValidator:
 
     def verify(self, payload: str, headers: dict[str, str]) -> Any:
         if not payload or not payload.strip():
-            raise ValueError("payload cannot be empty")
+            raise InvalidPayloadError("payload cannot be empty")
 
         if headers is None:
-            raise ValueError("headers cannot be None")
+            raise MissingHeaderError("headers cannot be None")
 
         message_id = headers.get(self.HEADER_ID)
         timestamp_str = headers.get(self.HEADER_TIMESTAMP)
@@ -47,17 +59,20 @@ class WebhookValidator:
         try:
             timestamp_ms = int(timestamp_str)
         except ValueError as e:
-            raise ValueError("Invalid timestamp format") from e
+            raise InvalidTimestampError("Invalid timestamp format") from e
 
         self._validate_timestamp(timestamp_ms)
 
         signature_payload = f"{message_id}.{timestamp_ms}.{payload}"
         expected_signature = generate_signature(self._secret_key, signature_payload)
 
-        if not hmac.compare_digest(signature, expected_signature):
+        if not _constant_time_equals(signature, expected_signature):
             raise InvalidSignatureError("Invalid signature")
 
-        return json.loads(payload)
+        try:
+            return json.loads(payload)
+        except json.JSONDecodeError as e:
+            raise InvalidPayloadError("payload is not valid JSON") from e
 
     def _validate_timestamp(self, timestamp_ms: int) -> None:
         current_time_ms = int(time.time() * 1000)
