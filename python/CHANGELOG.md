@@ -2,6 +2,26 @@
 
 All notable changes to cm-email-webhook-verification will be documented in this file.
 
+## [1.0.2] - 2026-11-18
+
+### Fixed
+
+- `verify()` raised `TypeError` instead of `InvalidSignatureError` when the `svix-signature` header contained non-ASCII characters, because `hmac.compare_digest` rejects non-ASCII `str` operands. Signatures are now compared as bytes, so such a header is rejected like any other invalid signature
+- `verify()` now raises `WebhookVerificationError` subclasses for every failure caused by untrusted input, so the documented `except WebhookVerificationError` handler returns 401 as intended instead of the framework answering 500:
+  - empty payload: `InvalidPayloadError` (was a bare `ValueError`)
+  - non-numeric `svix-timestamp`: `InvalidTimestampError` (was a bare `ValueError`)
+  - `headers` is `None`: `MissingHeaderError` (was a bare `ValueError`)
+  - correctly signed payload that is not valid JSON: `InvalidPayloadError` (was `json.JSONDecodeError`)
+- `__version__` now matches the package version
+
+### Added
+
+- `InvalidPayloadError` and `InvalidTimestampError`
+
+### Compatibility
+
+- `MissingHeaderError`, `InvalidPayloadError` and `InvalidTimestampError` also subclass `ValueError`, so existing code that catches `ValueError` keeps working
+
 ## [1.0.1] - 2026-10-19
 
 ### Fixed
